@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="">
+        <meta name="keywords" content="audio, music, player, tracklist, playlist">
+        <title>Audio Player</title>
+        <link rel="icon" href="img/icons/favicon.png">
+        <link rel="stylesheet" href="styles/fonts.css" type="text/css">
+        <link rel="stylesheet" href="styles/style.css" type="text/css">
+        <link rel="stylesheet" href="styles/scrolling_cursors.css" type="text/css">
+        <link rel="stylesheet" href="styles/animation.css">
+    </head>
+
+    <body class="background-blur loading">
+        <script>
+            window.onerror = function(message, url, line, col, error) {
+                //alert(`${message}\nВ ${line}:${col} на ${url}`);
+                //console.error(`${message}\nВ ${line}:${col} на ${url}`);
+            };
+        </script>
+
+        <div id="preloader" class="modal-overlay active"
+            ><div class="movement-area">
+                <div class="central-point">
+                    <span class="symbol">&#119070;</span>
+                </div>
+            </div>
+        </div>
+
+        <!--<script src="https://cdn.jsdelivr.net/npm/jsmediatags"
+            onerror="this.onerror=null; this.src='scripts/libs/jsmediatags.min.js';">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/wicg-inert"
+            onerror="this.onerror=null; this.src='scripts/libs/inert.min.js';">
+        </script>-->
+        <script src="scripts/libs/jsmediatags.min.js"></script>
+        <script src="scripts/libs/inert.min.js"></script>
+        <script src="scripts/libs/scrollyfills.umd.js"></script>
+
+        <header></header>
+        
+        <main id="audio-player-container" aria-label="Audio player">
+            <aside id="tracklist-database" class="container-left-side" aria-labelledby="tracklist-database-title">
+                <h3 id="tracklist-database-title">
+                    <span class="sheen-fx">Tracklists</span>
+                    <!--<i class="icon-attention update-marker" data-tooltip="Tracklist database is updating..."></i>-->
+                </h3>
+                
+                <div id="tracklists-container">
+                    <!-- Example tracklist-section tree
+
+                    <section class="tracklist-section" data-id="tracklistId" data-tracklist-title="Tracklsit Title" data-date-update="..." data-number="1"
+                        aria-labelledby="tracklist[tracklistId]-title" aria-expanded="false" aria-controls="trlDetails[tracklistId]" tabindex="0">
+                        <div class="tracklist-menu">
+                            <div class="buttons-box left">
+                                <i class="icon-close delete-tracklist-tracks" data-tooltip="Delete tracks from the tracklist"></i>
+                            </div>
+                            <div class="tracklist-title-box">
+                                <h4 id="tracklist[tracklistId]-title">
+                                    <span class="tracklist-title" data-tooltip="Expand for details">Tracklist Title</span>
+                                    <i class="icon-attention update-marker" data-tooltip="Tracklist is updating..."></i>
+                                </h4>
+                            </div>
+                            <div class="buttons-box right">
+                                <i class="icon-list tracklist-to-playlist-replace" data-tooltip="Replace playlist" data-clear></i>
+                                <i class="icon-list-add tracklist-to-playlist-add" data-tooltip="Add to playlist"></i>
+                            </div>
+                        </div>
+                        <div id="trlDetails[tracklistId]" class="tracklist-details" data-toggling-all>
+                            <header class="strip">
+                                <p>
+                                    <input id="checkbox-tracklist[tracklistId]-all" type="checkbox" checked
+                                    ><label for="checkbox-tracklist[tracklistId]-all" class="design-proxy"></label
+                                    ><label for="checkbox-tracklist[tracklistId]-all" class="text"><span>Toggle all tracks</span></label>
+                                </p>
+                            </header>
+                            <main class="details-main">
+                                <div class="cover-box">
+                                    <img src="" alt="Tracklist Title Cover">
+                                </div>
+                                <ul class="list">
+                                    <li data-id="..." data-order="1" data-artist="Artist Name" data-title="Track Title" data-format="mp3">
+                                        <input id="checkbox-tracklist[tracklistId]-track[1]" type="checkbox" checked
+                                        ><label for="checkbox-tracklist[tracklistId]-track[1]" class="design-proxy"></label
+                                        ><label for="checkbox-tracklist[tracklistId]-track[1]" class="text"
+                                            ><div class="order">1.&nbsp;<div
+                                            ><span class="track-artist">Artist Name</span
+                                            ><span> &ndash; </span
+                                            ><span class="track-title">
+                                                Track Title
+                                                <span class="last-word-box">
+                                                    Last-Track-Title-Word
+                                                    <i class="icon-attention update-marker" data-tooltip="Track is updating..."></i>
+                                                </span>
+                                            </span
+                                        </label>
+                                    </li>
+                                    ...
+                                </ul>
+                            </main>
+                            <footer class="strip">
+                                <p>
+                                    <button id="edit-tracklist[tracklistId]"></button>
+                                    <label for="edit-tracklist[tracklistId]" class="design-proxy">
+                                        <svg class="edit-tracklist-svg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                            width="120.000000pt" height="81.000000pt" viewBox="0 0 120.000000 81.000000"
+                                            preserveAspectRatio="xMidYMid meet">
+
+                                            <g transform="translate(0.000000,81.000000) scale(0.100000,-0.100000)"
+                                                fill="currentColor" stroke="none">
+                                                <path d="M20 790 c-27 -27 -25 -62 3 -88 23 -22 28 -22 361 -22 l337 0 24 25
+                                                    c30 29 31 45 4 79 l-20 26 -345 0 c-331 0 -345 -1 -364 -20z"/>
+                                                <path d="M16 528 c-21 -30 -20 -61 2 -81 17 -15 57 -17 370 -17 l352 0 15 24
+                                                    c19 29 11 72 -15 86 -11 6 -159 10 -364 10 l-345 0 -15 -22z"/>
+                                                <path d="M1055 510 l-29 -30 54 -56 55 -55 34 37 33 36 -48 49 c-27 27 -53 49
+                                                    -59 49 -6 0 -24 -14 -40 -30z"/>
+                                                <path d="M827 282 l-157 -157 0 -58 0 -57 53 0 52 0 165 165 165 165 -50 50
+                                                    c-27 27 -54 50 -60 50 -6 0 -81 -71 -168 -158z"/>
+                                                <path d="M17 272 c-21 -23 -22 -51 -1 -80 15 -22 19 -22 238 -22 203 0 224 2
+                                                    239 18 22 24 21 65 -1 85 -16 15 -48 17 -239 17 -200 0 -221 -2 -236 -18z"/>
+                                            </g>
+                                        </svg>
+                                    </label
+                                    ><label for="edit-tracklist[tracklistId]" class="text">Manage tracklist</label>
+                                </p>
+                            </footer>
+                        </div>
+                    </section>
+                    -->
+                </div>
+                
+                <section class="global-controls">
+                    <div class="left-col">
+                        <button id="create-tracklist" data-tooltip="Create new tracklist">
+                            <svg class="create-tracklist-svg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                width="128.000000pt" height="89.000000pt" viewBox="0 0 128.000000 89.000000"
+                                preserveAspectRatio="xMidYMid meet">
+
+                                <g transform="translate(0,89) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+                                    <path d="M20 870 c-27 -27 -25 -62 3 -88 23 -22 28 -22 361 -22 l337 0 24 25
+                                        c30 29 31 45 4 79 l-20 26 -345 0 c-331 0 -345 -1 -364 -20z"/>
+                                    <path d="M16 608 c-21 -30 -20 -61 2 -81 17 -15 57 -17 370 -17 l352 0 15 24
+                                        c19 29 11 72 -15 86 -11 6 -159 10 -364 10 l-345 0 -15 -22z"/>
+                                    <path d="M917 612 c-12 -14 -17 -43 -19 -127 l-3 -110 -110 -3 c-84 -2 -113
+                                        -7 -127 -19 -23 -20 -23 -55 0 -82 15 -18 29 -21 127 -23 l110 -3 3 -109 c1
+                                        -61 8 -116 14 -123 14 -17 82 -17 96 0 6 7 13 62 14 123 l3 109 113 5 c98 4
+                                        116 8 128 24 19 26 18 49 -3 75 -16 18 -30 21 -128 23 l-110 3 -3 110 c-3 121
+                                        -13 145 -62 145 -15 0 -34 -8 -43 -18z"/>
+                                    <path d="M17 352 c-21 -23 -22 -51 -1 -80 15 -22 19 -22 238 -22 203 0 224 2
+                                        239 18 22 24 21 65 -1 85 -16 15 -48 17 -239 17 -200 0 -221 -2 -236 -18z"/>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="right-col">
+                        <button id="sort-tracklists" data-tooltip="Sorting by date updated/alphabetical">
+                            <img src="img/icons/sort_alphabetical.png" class="button-image" alt="Sort Alphabetical">
+                        </button
+                        ><button id="expand-all-tracklist-details" data-tooltip="Expand all tracklist details">
+                            <i class="icon-plus-squared-alt button-icon"></i>
+                        </button
+                        ><button id="collapse-all-tracklist-details" data-tooltip="Collapse all tracklist details">
+                            <i class="icon-minus-squared-alt button-icon"></i>
+                        </button
+                        ><button id="clear-playlist" data-tooltip="Clear playlist">
+                            <img src="img/icons/clear.png" class="button-image" alt="Clear">
+                        </button>
+                    </div>
+                </section>
+            </aside>
+
+            <div id="audio-player" role="application">
+                <div class="selected-track">
+                    <div id="start-info-display" hidden></div>
+                    <div><span id="title-display" class="display"></span></div>
+                    <div><span id="artist-display" class="display"></span></div>
+                </div>
+
+                <div class="track-time-info">
+                    <div id="current-time" class="time-display">
+                        <div class="digit">-</div
+                        ><div class="digit">-</div
+                        ><div class="divider">:</div
+                        ><div class="digit">-</div
+                        ><div class="digit">-</div>
+                    </div>
+                    <div class="time-range-box">
+                        <div id="buffers-container">
+                            <!--<div class="buffering"></div>-->
+                        </div>
+                        <div id="time-range" data-tooltip>
+                            <div id="time-line"></div>
+                            <div id="time-bar" hidden></div>
+                        </div>
+                    </div>
+                    <div id="duration" class="time-display">
+                        <div class="digit">-</div
+                        ><div class="digit">-</div
+                        ><div class="divider">:</div
+                        ><div class="digit">-</div
+                        ><div class="digit">-</div>
+                    </div>
+                </div>
+
+                <div></div>
+
+                <audio-controls>
+                    <i slot="play-pause" id="play-pause" class="icon-play" data-tooltip="Play/Pause"></i>
+                    <i slot="stop" id="stop" class="icon-stop" data-tooltip="Stop"></i>
+                    <i slot="rewind" id="rewind" class="icon-to-start" data-tooltip="Step back/Fast-rewind"></i>
+                    <i slot="forward" id="forward" class="icon-to-end" data-tooltip="Step forward/Fast-forward"></i>
+                    <div slot="indicator" id="indicator"></div>
+                    <i slot="shuffle" id="shuffle" class="btn-img-wrapper" data-tooltip="Shuffle playlist">
+                        <div class="circle-background">
+                            <img src="img/icons/shuffle_playlist.png" alt="Shuffle Playlist">
+                        </div>
+                    </i>
+                    <i slot="repeat" id="repeat" class="btn-img-wrapper" data-repeat="none" data-tooltip="Repeat playlist/track">
+                        <div class="circle-background">
+                            <img src="img/icons/repeat_playlist.png" alt="Repeat Playlist">
+                        </div>
+                    </i>
+                    <div slot="volume" class="volume-container">
+                        <i id="volume" class="icon-volume" data-tooltip="Volume on/off"></i>
+                        <div id="volume-range" data-tooltip>
+                            <div class="inactive-range"></div>
+                            <div id="volume-line"></div>
+                            <div id="volume-bar"></div>
+                        </div>
+                    </div>
+                </audio-controls>
+
+                <div id="playlist-container">
+                    <div class="playlist-scroll-arrow-box up">
+                        <div id="playlist-scroll-arrow-up" class="scroll-arrow" hidden></div>
+                    </div>
+
+                    <div id="visible-playlist-area" tabindex="0">
+                        <div id="playlist-limiter">
+                            <div id="playlist" data-order="original">
+                                <!-- Example playlist track tree
+
+                                <div class="track">
+                                    <audio data-tracklist-id="" data-id="" data-artist="" data-title="" data-src="" data-alt="" data-dub=""
+                                        src="(data-src)" preload="none"></audio>
+                                    <div class="additionals">
+                                        <i class="icon-close remove-track" data-tooltip="Remove track"></i>
+                                        <div class="loading-figure"></div>
+                                        <i class="icon-attention update-marker" data-tooltip="Track is updating..."></i>
+                                    </div>
+                                    <div class="track-info-box" tabindex="0">
+                                        <div class="artist-name-limiter">
+                                            <span class="artist-name">Artist</span>
+                                        </div>
+                                        <div class="track-title-limiter">
+                                            <span class="track-title">
+                                                Title
+                                                <sup>alt-1</sup> (2)
+                                                <sup class="warning">*The track will be updated after downloading</sup>
+                                            </span>
+                                        </div>
+                                        <div class="load-info">
+                                            <div class="progress">
+                                                <div class="status"></div>
+                                            </div>
+                                            <div class="display-progress"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div id="temporary-track-storage" style="height: 50px; outline: 1px solid" hidden></div>
+
+                    <div class="playlist-scroll-arrow-box down">
+                        <div id="playlist-scroll-arrow-down" class="scroll-arrow" hidden></div>
+                    </div>
+                </div>
+
+                <div class="audio-player-footer">
+                    <div class="column left">
+                        <div class="config-wrapper">
+                            <i id="configuration" class="icon-view-mode" data-tooltip="Buttons configuration"></i>
+                        </div>
+                        <i id="coloring" class="icon-brush" data-tooltip="Audio player color"></i>
+                        <i id="playlist-style" class="icon-align-center" data-tooltip="Playlist style"></i>
+                    </div>
+                    <div class="column center">
+                        <span class="version"></span>
+                    </div>
+                    <div class="column right">
+                        <i id="settings" class="icon-cog-circled" data-tooltip="Settings"></i>
+                        <i id="info" class="icon-info" data-tooltip="Assigned keys info"></i>
+                    </div>
+                </div>
+
+                <div class="tracklist-database-button-container">
+                    <div id="tracklist-database-button" class="tracklist-database-button" data-tooltip="Tracklist database">
+                        <i class="icon-left-open"></i>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="container-right-side">
+                <div id="settings-area" role="region" aria-labelledby="settings-title" hidden>
+                    <h3 id="settings-title"><span class="sheen-fx">Settings</span></h3>
+
+                    <textarea id="current-playlist" cols="50" readonly></textarea>
+
+                    <section class="setting-section">
+                        <input id="visible-tracks-checkbox" type="checkbox">
+                        <label for="">Set own number of visible tracks (0-999)</label>
+                        <input id="visible-tracks-input" type="number" min="0" max="999" value="7">
+                    </section>
+                    <section class="setting-section">
+                        <label for="scroll-elements-opacity-input">Playlist scroll elements opacity (0-100)</label>
+                        <input id="scroll-elements-opacity-input" type="number" min="0" max="100">
+                    </section>
+                    <section class="setting-section">
+                        <label for="wheel-scroll-step-input">Wheel scroll step (1-5)</label>
+                        <input id="wheel-scroll-step-input" type="number" min="1" max="5">
+                    </section>
+                    <section class="setting-section">
+                        <label for="additional-options-checkbox">Enable additional options</label>
+                        <span class="input-box">
+                            <input id="additional-options-checkbox" type="checkbox">
+                        </span>
+                    </section>
+
+                    <button id="default-settings"><i class="icon-wrench"></i> Reset to default</button>
+                    <button class="close-button"><i class="icon-close"></i></button>
+                </div>
+
+                <div id="document-scroll-arrows-container" hidden>
+                    <div class="arrow-box" hidden>
+                        <i id="document-scroll-arrow-up" class="icon-up-circled scroll-arrow"></i>
+                    </div>
+                    <div class="arrow-box" hidden>
+                        <i id="document-scroll-arrow-down" class="icon-down-circled scroll-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tooltip"></div>
+
+            <div id="keys-info-window" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="keys-info-title" hidden
+                ><article class="keys-info">
+                    <div class="scrollable-area" tabindex="0">
+                        <h2 id="keys-info-title">Assigned Keys</h2>
+
+                        <!--Play/pause-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/w.png" alt="Key W">
+                                /
+                                <img src="img/keyboard_keys/space.png" alt="Key Space">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-play"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">play</span> key<wbr>/<wbr>button
+                                            <span class="emphase-1">starts playing</span> audio.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-pause"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">pause</span> key<wbr>/<wbr>button
+                                            <span class="emphase-1">pauses playing</span> audio.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Stop-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/s.png" alt="Key S">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-stop"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">stop</span> key<wbr>/<wbr>button
+                                            <span class="emphase-1">stops playing</span> audio.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Step forward-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/d.png" alt="Key D">
+                                /
+                                <img src="img/keyboard_keys/arrow-4.png" alt="Key ArrowRight">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-to-end"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">step forward</span> key<wbr>/<wbr>button allows the user 
+                                            to <span class="emphase-1">skip</span> the <span class="emphase-2">
+                                            current</span> audio they are interacting with and <span class="emphase-1">start 
+                                            playing</span> the <span class="emphase-2">next one</span> in the list.
+                                        </p>
+                                        <p>
+                                            The sound playback state is <span class="emphase-3">preserved</span> 
+                                            in this case.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Step back-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/a.png" alt="Key A">
+                                /
+                                <img src="img/keyboard_keys/arrow-1.png" alt="Key ArrowLeft">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-to-start"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            If the user presses<wbr>/<wbr>clicks the <span class="emphase-1">step back</span> 
+                                            key<wbr>/<wbr>button <span class="emphase-3">at the beginning</span> of playing audio, 
+                                            it will <span class="emphase-1">skip to the beginning</span> of the 
+                                            <span class="emphase-2">previous</span> audio track. If the user presses<wbr>/<wbr>clicks 
+                                            this key<wbr>/<wbr>button <span class="emphase-3">during</span> audio track, it will 
+                                            <span class="emphase-1">jump to the start</span> of 
+                                            <span class="emphase-2">that</span> audio track.
+                                        </p>
+                                        <p>
+                                            The sound playback state is <span class="emphase-3">preserved</span> 
+                                            in any of these cases.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Fast-forward-->
+                        <section>
+                            <div class="assigned-keys">
+                                <figure>
+                                    <figcaption><span class="emphase-1">Hold</span></figcaption>
+                                    <img src="img/keyboard_keys/d.png" alt="Key D">
+                                </figure>
+                                /
+                                <figure>
+                                    <figcaption><span class="emphase-1">Hold</span></figcaption>
+                                    <img src="img/keyboard_keys/arrow-4.png" alt="Key ArrowRight">
+                                </figure>
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-fast-forward"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">fast-forward</span> key<wbr>/<wbr>button allows the user 
+                                            to <span class="emphase-1">go fast-forward</span>. If the user holds down 
+                                            this key<wbr>/<wbr>button, it will start to move through the audio <span class="emphase-3">
+                                            faster than the playback speed</span> in the <span class="emphase-1">forward
+                                            </span> direction.
+                                        </p>
+                                        <p>
+                                            When the audio <span class="emphase-3">reaches the end</span>, it will 
+                                            <span class="emphase-1">jump</span> to the <span class="emphase-2">next</span> 
+                                            audio.
+                                        </p>
+                                        <p>
+                                            The sound playback state is <span class="emphase-3">preserved</span> 
+                                            in any of these cases.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Fast-rewind-->
+                        <section>
+                            <div class="assigned-keys">
+                                <figure>
+                                    <figcaption><span class="emphase-1">Hold</span></figcaption>
+                                    <img src="img/keyboard_keys/a.png" alt="Key A">
+                                </figure>
+                                /
+                                <figure>
+                                    <figcaption><span class="emphase-1">Hold</span></figcaption>
+                                    <img src="img/keyboard_keys/arrow-1.png" alt="Key ArrowLeft">
+                                </figure>
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-fast-backward"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            Holding down the <span class="emphase-1">fast-rewind</span> key<wbr>/<wbr>button allows 
+                                            the user to <span class="emphase-1">rewind</span> audio backward. This is 
+                                            helpful when the user wants to <span class="emphase-3">go back</span> to a 
+                                            specific moment in the audio.
+                                        </p>
+                                        <p>
+                                            When the audio <span class="emphase-3">reaches the beginning</span>, it will 
+                                            <span class="emphase-1">jump</span> to the <span class="emphase-2">previous</span> 
+                                            audio.
+                                        </p>
+                                        <p>
+                                            The sound playback state is <span class="emphase-3">preserved</span> 
+                                            in any of these cases.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Volume on/off-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/r.png" alt="Key R">
+                                /
+                                <img src="img/keyboard_keys/v.png" alt="Key V">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-volume"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">volume</span> key<wbr>/<wbr>button <span class="emphase-1">turns</span>
+                                            the sound <span class="emphase-1">on and off</span>. When <span class="emphase-3">
+                                            on</span>, the <span class="emphase-2">last non-zero</span> volume value 
+                                            <span class="emphase-1">is applied</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Volume increasing-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/shift-2.png" alt="Key Shift"
+                                >+<img src="img/keyboard_keys/arrow-3.png" alt="Key Up">
+                                /
+                                <img src="img/keyboard_keys/symbol-5.png" alt="Key Period (>)">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon"></div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">louder</span> key
+                                            <span class="emphase-1">increases</span> volume of audio.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Volume decreasing-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/shift-2.png" alt="Key Shift"
+                                >+<img src="img/keyboard_keys/arrow-2.png" alt="Key Down">
+                                /
+                                <img src="img/keyboard_keys/symbol-4.png" alt="Key Comma (<)">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon"></div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">quieter</span> key
+                                            <span class="emphase-1">decreases</span> volume of audio.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Shuffle-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/q.png" alt="Key Q">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="btn-img-wrapper">
+                                                <div class="circle-background">
+                                                    <img src="img/icons/shuffle_playlist.png" alt="Shuffle Playlist">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">shuffle</span> button is 
+                                            <span class="emphase-4">disabled</span>. The playlist plays in 
+                                            <span class="emphase-1">clear order</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="btn-img-wrapper">
+                                                <div class="circle-background active">
+                                                    <img src="img/icons/shuffle_playlist.png" alt="Shuffle Playlist">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">shuffle</span> button is 
+                                            <span class="emphase-3">enabled</span>. It is used to 
+                                            <span class="emphase-1">randomly play</span> an audio from a given list.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Repeat-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/e.png" alt="Key E">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="btn-img-wrapper">
+                                                <div class="circle-background">
+                                                    <img src="img/icons/repeat_playlist.png" alt="Repeat Playlist">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">repeat</span> button is <span class="emphase-4">
+                                            disabled</span>. When an audio <span class="emphase-2">track</span> has 
+                                            <span class="emphase-3">finished playing</span>, the <span class="emphase-2">
+                                            next</span> track is automatically <span class="emphase-1">selected and played</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="btn-img-wrapper">
+                                                <div class="circle-background active">
+                                                    <img src="img/icons/repeat_playlist.png" alt="Repeat Playlist">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">repeat</span> button is <span class="emphase-3">
+                                            enabled</span> in <span class="emphase-1">playlist</span> mode. When the 
+                                            <span class="emphase-2">playlist</span> is <span class="emphase-3">
+                                            finished</span>, the audio player will <span class="emphase-1">stop playing and 
+                                            return</span> to its <span class="emphase-3">initial</span> appearance.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="btn-img-wrapper">
+                                                <div class="circle-background active">
+                                                    <img src="img/icons/repeat_track.png" alt="Repeat Track">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">repeat</span> button is <span class="emphase-3">
+                                            enabled</span> in <span class="emphase-1">track</span> mode. It is used to play the 
+                                            <span class="emphase-2">selected</span> audio on <span class="emphase-1">
+                                            repeat</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Audio player buttons configuration-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/z.png" alt="Key Z">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-view-mode"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">configuration</span> key<wbr>/<wbr>button is used to 
+                                            <span class="emphase-1">change the scheme</span> of the 
+                                            <span class="emphase-3"> control buttons layout</span> in the audio player.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Player color-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/x.png" alt="Key X">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-brush"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">color</span> key<wbr>/<wbr>button is used to 
+                                            <span class="emphase-1">adjust the color style</span> of the audio player.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Playlist style-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/c.png" alt="Key C">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-align-center"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            <span class="emphase-1">Smooth</span> playlist style 
+                                            <span class="emphase-3">enabled</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-align-left"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            <span class="emphase-1">Strict</span> playlist style 
+                                            <span class="emphase-3">enabled</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Settings-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/f.png" alt="Key F">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-cog-circled"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">settings</span> key<wbr>/<wbr>button allows users to 
+                                            access the audio player settings to <span class="emphase-1">customize</span> 
+                                            some <span class="emphase-3">control options</span> and 
+                                            <span class="emphase-1">see</span> the <span class="emphase-2">current</span> 
+                                            playlist with an <span class="emphase-1">ordered</span> set of audio tracks even 
+                                            when <span class="emphase-3">shuffling</span> is enabled.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Keys info-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/i.png" alt="Key I">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-info"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">information</span> key<wbr>/<wbr>button is used to get 
+                                            acquainted with the <span class="emphase-1">keys assigned</span> to the audio 
+                                            player <span class="emphase-1">buttons</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Tracklist database-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/t.png" alt="Key T">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="tracklist-database-button-container">
+                                                <div class="tracklist-database-button">
+                                                    <i class="icon-left-open"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">tracklist database</span> key<wbr>/<wbr>button is utilized to
+                                            <span class="emphase-1">toggle</span> the display of available tracklists
+                                            <span class="emphase-1">on and off</span>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Escape/close button-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/esc.png" alt="Key Escape">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <i class="icon-close"></i>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">close</span> key<wbr>/<wbr>button <span class="emphase-1">closes</span>
+                                            the active section/window.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Enter-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/enter.png" alt="Key Enter">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon"></div>
+                                    <div class="description">
+                                        <p>
+                                            When the <span class="emphase-2">track</span> from the playlist <span class="emphase-3">
+                                            is focused</span> the specified <span class="emphase-2">key</span> <span class="emphase-1">
+                                            (re)starts playing</span> that track from the <span class="emphase-3">beginning</span>.
+                                        </p>
+                                        <p>
+                                            Clicking on the <span class="emphase-3">track name</span> performs the same action.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon"></div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> <span class="emphase-3">
+                                            is focused</span> the specified <span class="emphase-2">key</span> <span class="emphase-1">
+                                            expands<wbr>/<wbr>collapses</span> the tracklist <span class="emphase-3">details</span>.
+                                        </p>
+                                        <p>
+                                            Clicking on the <span class="emphase-3">tracklist name</span> performs the same action.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Remove track from playlist/Delete tracks from tracklist-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/delete.png" alt="Key Delete">
+                            </div>
+                            <div class="relevant-functions">
+                                <!--Remove track from playlist-->
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background small-size"><i class="icon-close remove-track"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the <span class="emphase-2">track</span> from the playlist 
+                                            <span class="emphase-3">is focused</span> the specified <span class="emphase-2">key</span> 
+                                            <span class="emphase-1">removes</span> that track from it.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--Delete tracks from tracklist-->
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <i class="icon-close delete-tracklist-tracks"></i>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> or any of its active
+                                            internal elements <span class="emphase-3">are focused</span>, the specified
+                                            <span class="emphase-2">key</span> will <span class="emphase-1">delete</span> 
+                                            the tracks from <span class="emphase-3">that</span> tracklist and from the database. 
+                                            Deleting <span class="emphase-2">all</span> tracks prompts to delete the 
+                                            <span class="emphase-3">tracklist</span> itself.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                        <p>
+                                            This operation is <span class="emphase-4">irreversible</span>!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Clear playlist and add tracks to playlist-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/alt.png" alt="Key Alt"
+                                >+<img src="img/keyboard_keys/plus.png" alt="Key NumpadAdd">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-list"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> or any of its active internal
+                                            elements <span class="emphase-3">are focused</span>, the specified <span class="emphase-2">key</span>
+                                            combination will <span class="emphase-1">clear</span> the playlist and <span class="emphase-1">add</span>
+                                            the <span class="emphase-2">selected</span> tracks from <span class="emphase-3">that tracklist</span>
+                                            to the audio player's <span class="emphase-3">playlist</span>.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Add tracks to playlist without clearing it-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/shift-2.png" alt="Key Shift"
+                                >+<img src="img/keyboard_keys/plus.png" alt="Key NumpadAdd">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background"><i class="icon-list-add"></i></div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> or any of its active internal
+                                            elements <span class="emphase-3">are focused</span>, the specified <span class="emphase-2">key</span>
+                                            combination will <span class="emphase-1">add</span> the <span class="emphase-2">selected</span> tracks
+                                            from <span class="emphase-3">that tracklist</span> to the audio player's <span class="emphase-3">playlist</span>
+                                            <span class="emphase-1">without clearing</span> it.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Edit/create tracklist-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/insert.png" alt="Key Insert">
+                            </div>
+                            <div class="relevant-functions">
+                                <!--Edit tracklist-->
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="edit-tracklist">
+                                                <svg class="edit-tracklist-svg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                                    width="120.000000pt" height="81.000000pt" viewBox="0 0 120.000000 81.000000"
+                                                    preserveAspectRatio="xMidYMid meet">
+
+                                                    <g transform="translate(0.000000,81.000000) scale(0.100000,-0.100000)"
+                                                        fill="currentColor" stroke="none">
+                                                        <path d="M20 790 c-27 -27 -25 -62 3 -88 23 -22 28 -22 361 -22 l337 0 24 25
+                                                            c30 29 31 45 4 79 l-20 26 -345 0 c-331 0 -345 -1 -364 -20z"/>
+                                                        <path d="M16 528 c-21 -30 -20 -61 2 -81 17 -15 57 -17 370 -17 l352 0 15 24
+                                                            c19 29 11 72 -15 86 -11 6 -159 10 -364 10 l-345 0 -15 -22z"/>
+                                                        <path d="M1055 510 l-29 -30 54 -56 55 -55 34 37 33 36 -48 49 c-27 27 -53 49
+                                                            -59 49 -6 0 -24 -14 -40 -30z"/>
+                                                        <path d="M827 282 l-157 -157 0 -58 0 -57 53 0 52 0 165 165 165 165 -50 50
+                                                            c-27 27 -54 50 -60 50 -6 0 -81 -71 -168 -158z"/>
+                                                        <path d="M17 272 c-21 -23 -22 -51 -1 -80 15 -22 19 -22 238 -22 203 0 224 2
+                                                            239 18 22 24 21 65 -1 85 -16 15 -48 17 -239 17 -200 0 -221 -2 -236 -18z"/>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> or any of its active internal
+                                            elements <span class="emphase-3">are focused</span>, the specified <span class="emphase-2">key</span>
+                                            launches the <span class="emphase-1">tracklist manager</span>, allowing for
+                                            <span class="emphase-1">editing</span> of the <span class="emphase-2">current</span> tracklist,
+                                            including: updating the tracklist name and image, altering the artist's name, editing the track
+                                            title and<wbr>/<wbr>or file, as well as adding new tracks, removing existing ones, and deleting the tracklist
+                                            itself.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--Create tracklist-->
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <div class="create-tracklist">
+                                                <svg class="create-tracklist-svg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                                    width="128.000000pt" height="89.000000pt" viewBox="0 0 128.000000 89.000000"
+                                                    preserveAspectRatio="xMidYMid meet">
+
+                                                    <g transform="translate(0,89) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+                                                        <path d="M20 870 c-27 -27 -25 -62 3 -88 23 -22 28 -22 361 -22 l337 0 24 25
+                                                            c30 29 31 45 4 79 l-20 26 -345 0 c-331 0 -345 -1 -364 -20z"/>
+                                                        <path d="M16 608 c-21 -30 -20 -61 2 -81 17 -15 57 -17 370 -17 l352 0 15 24
+                                                            c19 29 11 72 -15 86 -11 6 -159 10 -364 10 l-345 0 -15 -22z"/>
+                                                        <path d="M917 612 c-12 -14 -17 -43 -19 -127 l-3 -110 -110 -3 c-84 -2 -113
+                                                            -7 -127 -19 -23 -20 -23 -55 0 -82 15 -18 29 -21 127 -23 l110 -3 3 -109 c1
+                                                            -61 8 -116 14 -123 14 -17 82 -17 96 0 6 7 13 62 14 123 l3 109 113 5 c98 4
+                                                            116 8 128 24 19 26 18 49 -3 75 -16 18 -30 21 -128 23 l-110 3 -3 110 c-3 121
+                                                            -13 145 -62 145 -15 0 -34 -8 -43 -18z"/>
+                                                        <path d="M17 352 c-21 -23 -22 -51 -1 -80 15 -22 19 -22 238 -22 203 0 224 2
+                                                            239 18 22 24 21 65 -1 85 -16 15 -48 17 -239 17 -200 0 -221 -2 -236 -18z"/>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            When the database <span class="emphase-2">tracklist</span> or any of its active internal
+                                            elements <span class="emphase-3">are not focused</span>, the specified <span class="emphase-2">key</span>
+                                            allows for the <span class="emphase-1">creation</span> of a new <span class="emphase-1">tracklist</span>
+                                            by adding tracks with all the necessary data.
+                                        </p>
+                                        <p>
+                                            The corresponding <span class="emphase-2">button</span> works regardless of focus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Sort tracklists-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/v.png" alt="Key V">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <img src="img/icons/sort_date.png" class="button-image" alt="Sort Date">
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">sort</span> key<wbr>/<wbr>button, when <span class="emphase-2">date</span> sorting
+                                            <span class="emphase-3">is activated</span>, <span class="emphase-1">arranges the tracklists</span>
+                                            by the <span class="emphase-2">date of creation<wbr>/<wbr>modification</span>, starting with the most
+                                            recently created<wbr>/<wbr>modified.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <img src="img/icons/sort_alphabetical.png" class="button-image" alt="Sort Alphabetical">
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">sort</span> key<wbr>/<wbr>button, when <span class="emphase-2">alphabetical</span>
+                                            sorting <span class="emphase-3">is activated</span>, organizes the tracklists in <span class="emphase-2">
+                                            alphabetical order</span> from A to Z.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Expand all tracklist details-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/plus.png" alt="Key NumpadAdd">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <i class="icon-plus-squared-alt button-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">expand details</span> key<wbr>/<wbr>button is designed to
+                                            <span class="emphase-1">unveil</span> the <span class="emphase-3">full details</span> of
+                                            <span class="emphase-2">each</span> tracklist.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Collapse all tracklist details-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/symbol-11.png" alt="Key NumpadSubtract">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <i class="icon-minus-squared-alt button-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">collapse details</span> key<wbr>/<wbr>button is crafted to
+                                            <span class="emphase-1">hide</span> the <span class="emphase-3">extended information</span> of
+                                            <span class="emphase-2">each</span> tracklist, ensuring a tidy and concise overview.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!--Clear playlist-->
+                        <section>
+                            <div class="assigned-keys">
+                                <img src="img/keyboard_keys/backspace.png" alt="Key Backspace">
+                            </div>
+                            <div class="relevant-functions">
+                                <div class="row">
+                                    <div class="icon">
+                                        <div class="icon-background">
+                                            <img src="img/icons/clear.png" class="button-image" alt="Clear">
+                                        </div>
+                                    </div>
+                                    <div class="description">
+                                        <p>
+                                            The <span class="emphase-1">clear playlist</span> key<wbr>/<wbr>button swiftly
+                                            <span class="emphase-1">removes</span> <span class="emphase-2">all</span> tracks from the
+                                            <span class="emphase-3">current playlist</span>, resetting it to a blank state for new
+                                            selections.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <button class="close-button"><i class="icon-close"></i></button>
+                </article>
+            </div>
+            
+            <div id="tracklist-deletion" class="modal-overlay" role="dialog" aria-labelledby="tracklist-deletion-title"
+                aria-describedby="tracklist-deletion-description" hidden
+                ><div class="dialog-box">
+                    <div class="scrollable-area" tabindex="0">
+                        <h3 id="tracklist-deletion-title">Tracklist Deletion Confirmation</h3>
+                        <p id="tracklist-deletion-description">
+                            <span class="deleting-tracks-number"></span> track<span class="plural-suffix"></span>
+                            will be permanently deleted from the tracklist<br>
+                            <span class="target-tracklist quotes"></span
+                        ></p>
+                        <ul class="deleting-tracks"></ul>
+                    </div>
+
+                    <div class="static-area">
+                        <p class="tracklist-removal-confirm" hidden>
+                            <label><input type="checkbox" checked> Completely remove the tracklist from the database</label>
+                        </p>
+                        <p class="empty-tracklist-removal-confirm" hidden>Delete the empty tracklist from the database?</p>
+                        <h4 class="warning-info"><span>&#9888;</span> Attention! This action cannot be undone!</h3>
+                        <div class="dialog-box-buttons">
+                            <button class="ok-button"><span>&#10004;</span> ОК</button>
+                            <button class="cancel-button"><span>&#10060;</span> Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <button class="close-button"><i class="icon-close"></i></button>
+                </div>
+            </div>
+
+            <div id="tracklist-manager" class="modal-overlay" role="dialog" aria-labelledby="tracklist-manager-title"
+                aria-describedby="tracklist-manager-description" hidden
+                ><div class="dialog-box">
+                    <div class="scrollable-area" tabindex="0">
+                        <h3 id="tracklist-manager-title"></h3>
+                        <p id="tracklist-manager-description"></p>
+                        <div class="tracklist-form">
+                            <!-- Exabple tracklist form data tree
+
+                            <p class="tracklist-title-edit form-row text">
+                                <label for="input-tracklist-title" class="label-text">Tracklist title:</label
+                                ><input id="input-tracklist-title" name="tracklist-title" type="text" placeholder="Enter tracklist title"
+                                ><button class="reset" tabindex="-1"><i class="icon-ccw"></i></button
+                                ><span class="state">
+                                    <i class="icon-check ok" hidden></i>
+                                    <i class="icon-cancel fail" hidden></i>
+                                    <i class="icon-spin5 animate-spin wait"></i>
+                                </span>
+                            </p>
+                            <p class="tracklist-cover-edit form-row file">
+                                <span class="label-text">Tracklist cover:<br>
+                                    <span class="add-info">(optional, 120x120px)</span>
+                                </span
+                                ><label for="input-tracklist-cover" class="file-name" tabindex="0"></label
+                                ><input id="input-tracklist-cover" name="cover-file" type="file" data-optional
+                                    accept="image/jpeg, image/png, image/gif, image/svg+xml, image/webp, image/avif"
+                                ><button class="reset" tabindex="-1"><i class="icon-ccw"></i></button
+                                ><span class="state">
+                                    <i class="icon-check ok" hidden></i>
+                                    <i class="icon-cancel fail" hidden></i>
+                                </span>
+                            </p>
+                            <div class="form-row upload">
+                                <span class="label-text">Upload progress:</span
+                                ><div class="upload-range">
+                                    <div class="upload-progress"></div>
+                                </div
+                                ><span class="display-progress"></span
+                                ><span class="state">
+                                    <i class="icon-check ok" hidden></i>
+                                    <i class="icon-cancel fail" hidden></i>
+                                </span>
+                            </div>
+                            -->
+                        </div>
+                        <ul class="track-forms">
+                            <!-- Example track item tree
+
+                            <li id="track-form-item[1]" data-status="existing/new/removable" data-id="..." data-order="1" data-original-order="1">
+                                <div class="content-box">
+                                    <fieldset class="new-track">
+                                        <legend>Track <span class="order changed">1</span> (new)</legend>
+
+                                        <div class="track-form">
+                                            <p class="form-row text">
+                                                <label for="input-track[1]-artist" class="label-text">Artist name:</label
+                                                ><input id="input-track[1]-artist" name="artist" type="text"
+                                                    placeholder="File's tag auto-fills the field"
+                                                ><button class="reset" tabindex="-1"><i class="icon-ccw"></i></button
+                                                ><span class="state">
+                                                    <i class="icon-check ok" hidden></i>
+                                                    <i class="icon-cancel fail" hidden></i>
+                                                </span>
+                                            </p>
+                                            <p class="form-row text">
+                                                <label for="input-track[1]-title" class="label-text">Track title:</label
+                                                ><input id="input-track[1]-title" name="title" type="text"
+                                                    placeholder="File's tag auto-fills the field"
+                                                ><button class="reset" tabindex="-1"><i class="icon-ccw"></i></button
+                                                ><span class="state">
+                                                    <i class="icon-check ok" hidden></i>
+                                                    <i class="icon-cancel fail" hidden></i>
+                                                </span>
+                                            </p>
+                                            <p class="form-row file">
+                                                <span class="label-text">Music file:</span
+                                                ><label for="input-track[1]-file" class="file-name missing" tabindex="0">Select a file</label
+                                                ><input id="input-track[1]-file" name="track-file" type="file" accept="audio/mpeg, audio/wav, audio/flac"
+                                                ><button class="reset" tabindex="-1"><i class="icon-ccw"></i></button
+                                                ><span class="state">
+                                                    <i class="icon-check ok" hidden></i>
+                                                    <i class="icon-cancel fail" hidden></i>
+                                                </span>
+                                            </p>
+                                            <div class="form-row upload">
+                                                <span class="label-text">Upload progress:</span
+                                                ><div class="upload-range">
+                                                    <div class="upload-progress"></div>
+                                                </div
+                                                ><span class="display-progress"></span
+                                                ><span class="state">
+                                                    <i class="icon-check ok" hidden></i>
+                                                    <i class="icon-cancel fail" hidden></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="track-order-panel">
+                                            <button class="direction up" data-tooltip="Move track up">
+                                                <i class="icon-up-dir"></i>
+                                            </button>
+                                            <button class="direction down" data-tooltip="Move track down">
+                                                <i class="icon-down-dir"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <button class="remove-track-form-item" data-tooltip="Cancel track adding">
+                                            <i class="icon-minus-circled"></i>
+                                        </button>
+                                    </fieldset>
+                                </div>
+
+                                <div class="content-box">
+                                    <p class="delete-info">
+                                        The existing track <span class="target-text">Artist – Title</span>
+                                        <span class="status-text">will be deleted</span> from the tracklist
+                                        <span class="target-text">Tracklist title</span>.
+                                        <span class="restore-text">
+                                            <button class="restore-button inactive" tabindex="-1">Restore</button> the form.
+                                        </span>
+                                    </p>
+                                </div>
+                            </li>
+                            -->
+                        </ul>
+                    </div>
+
+                    <div class="static-area">
+                        <div class="drop-zone">
+                            <button class="add-track-form-item" data-tooltip="Add new track">
+                                <i class="icon-plus-circled"></i>
+                            </button>
+                        </div>
+                        <p class="tracklist-removal-confirm">
+                            <label><input type="checkbox"> Completely remove the tracklist from the database</label>
+                        </p>
+                        <div class="total-upload-row" hidden>
+                            <span class="label-text">Total upload progress:</span
+                            ><div class="upload-range">
+                                <div class="upload-progress"></div>
+                            </div
+                            ><span class="display-progress">0%</span
+                            ><span class="state">
+                                <i class="icon-check ok" hidden></i>
+                                <i class="icon-cancel fail" hidden></i>
+                            </span>
+                        </div>
+                        <div class="dialog-box-buttons">
+                            <button class="ok-button" disabled><span>&#10004;</span> ОК</button>
+                            <button class="cancel-button"><span>&#10060;</span> Cancel</button>
+                        </div>
+                        <button class="close-button"><i class="icon-close close-action"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="page-footer">
+            <p>All rights reserved<br>&#169; <time><script>document.write(new Date().getFullYear());</script></time></p>
+        </footer>
+            
+        <script src="scripts/audio_player.js?v=<?=time();?" type="module"></script>
+    </body>
+</html>

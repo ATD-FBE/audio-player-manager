@@ -1,0 +1,73 @@
+{
+    "tracklist-ac6b1197-f2d6-4859-8cda-2d721bcd7c73": {
+        "tracklistTitle": "Experiments and Parodies",
+        "cover": "cover.png",
+        "tracks": [
+            {
+                "order": 1,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "Cold Lights (Metal Mix)",
+                "format": "mp3",
+                "id": "track-0963eee4-9e2c-4523-aa1e-278e35d55fdb",
+                "version": "1.0"
+            },
+            {
+                "order": 2,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "Silent Minds",
+                "format": "mp3",
+                "id": "track-a92ef3e3-79ea-4254-8076-8cd56f5436fb",
+                "version": "1.0"
+            },
+            {
+                "order": 3,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "Classical TechnoDub",
+                "format": "mp3",
+                "id": "track-1b9f7deb-00c3-4936-b291-a9e5c9adf193",
+                "version": "1.0"
+            },
+            {
+                "order": 4,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "First Snow",
+                "format": "mp3",
+                "id": "track-fc4cca77-1510-4ca5-8eff-3526e7119b3a",
+                "version": "1.0"
+            },
+            {
+                "order": 5,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "New Year 2020 Experiment",
+                "format": "mp3",
+                "id": "track-a6c5dae1-0788-4b08-a019-7f49fd696c28",
+                "version": "1.0"
+            },
+            {
+                "order": 6,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "Harpsichords Attack!",
+                "format": "mp3",
+                "id": "track-fc8a0e3e-bb5f-4ed2-9419-d10c5b8db8e3",
+                "version": "1.0"
+            },
+            {
+                "order": 7,
+                "artist": "Zmicier M. (feat. ATD)",
+                "title": "Thousand Miles (of Drinking)",
+                "format": "mp3",
+                "id": "track-a85ed28b-0d30-4d18-95db-9e97ae321a9c",
+                "version": "1.0"
+            },
+            {
+                "order": 8,
+                "artist": "Dmitry Miroshkin & Anthony Driverson",
+                "title": "Raindrops (Guitar Mix)",
+                "format": "mp3",
+                "id": "track-05f2d614-6440-4297-b348-f97b2419c4c9",
+                "version": "1.0"
+            }
+        ],
+        "dateUpdated": "2026-03-04T11:17:25.135Z"
+    }
+}
