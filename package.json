@@ -1,5 +1,5 @@
 {
-    "name": "audio_player",
+    "name": "audio-player-manager",
     "version": "1.7.42",
     "main": "server.js",
     "dependencies": {

@@ -5864,7 +5864,7 @@ function isDemoMode() {
 }
 
 function showDemoWarning() {
-    alert(`Внимание! Приложение работает в демо-режиме. Изменение данных невозможно.`);
+    alert('WARNING: Demo Mode active. Changes are not allowed.');
 }
 
 //////////////////////////
