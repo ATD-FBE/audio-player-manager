@@ -291,7 +291,9 @@ const createServer = (protocol, port, host, domain) => {
         server = http.createServer(app);
     }
 
-    server.listen(port, host, () => {
+    const listenArgs = ENV === 'production' ? [port] : [port, host];
+
+    server.listen(...listenArgs, () => {
         console.log(`Server started at ${protocol}://${domain}:${port}`);
     });
 };
