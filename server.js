@@ -277,14 +277,15 @@ const PROTOCOL = process.env.PROTOCOL || 'http';
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 const DOMAIN = process.env.DOMAIN || 'localhost';
+const CERT_NAME = process.env.CERT_NAME || HOST;
 
-const createServer = (protocol, port, host, domain) => {
+const createServer = (protocol, port, host, domain, certName) => {
     let server;
 
     if (protocol === 'https') {
         const options = {
-            key: fs.readFileSync(`./certs/${host}-key.pem`),
-            cert: fs.readFileSync(`./certs/${host}.pem`)
+            key: fs.readFileSync(`./certs/${certName}-key.pem`),
+            cert: fs.readFileSync(`./certs/${certName}.pem`)
         };
         server = https.createServer(options, app);
     } else {
@@ -298,7 +299,7 @@ const createServer = (protocol, port, host, domain) => {
     });
 };
 
-createServer(PROTOCOL, PORT, HOST, DOMAIN);
+createServer(PROTOCOL, PORT, HOST, DOMAIN, CERT_NAME);
 
 /// Middlewares and Functions ///
 

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Название сервиса (можно назвать как угодно, например, app или server)
+  start-app:
+    # Команда Докеру собрать образ на основе Dockerfile в текущей папке (.)
+    build: .
+    
+    # 1. Переопределение команды запуска для локалки
+    command: npm run start
+
+    # 2. ПРОБРОС ПОРТОВ: Связь порта Windows (слева) с портом внутри контейнера (справа)
+    ports:
+      - "3000:3000"
+
+    # 3. ПОДГРУЗКА .ENV: Докер сам прочитает .env.development и закинет переменные в память процесса
+    env_file:
+      - ./config/.env.development
+
+    # 4. ГОРЯЧАЯ ПЕРЕЗАГРУЗКА (Volumes): Связь папки на Windows с папкой в контейнере
+    volumes:
+      - .:/app
+      - /app/node_modules # Исключение node_modules, чтобы контейнер юзал свои Linux-зависимости
+
+  test-app:
+    build: .
+    command: npm run test
+    ports:
+      - "33751:33751"
+    env_file:
+      - ./config/.env.testing
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  prod-app:
+    build: .
+    command: npm run prod
+    ports:
+      - "10000:10000"
+    env_file:
+      - ./config/.env.production
+    volumes:
+      - .:/app
+      - /app/node_modules

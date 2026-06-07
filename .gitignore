@@ -1,5 +1,5 @@
-/certs/
-/config/
-/_logs/
-/node_modules/
-/uploads/
+certs/
+config/
+_logs/
+node_modules/
+uploads/
